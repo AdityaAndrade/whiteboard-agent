@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { TutorialModal } from '@/components/wb/TutorialModal'
 import { NODE_TYPES, TYPE_ORDER } from '@/lib/wb-data'
 
 const steps = [
@@ -20,6 +22,8 @@ const steps = [
 ]
 
 export function LandingPage() {
+  const [tutorialOpen, setTutorialOpen] = useState(false)
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
       <section className="mx-auto max-w-3xl text-center">
@@ -39,11 +43,13 @@ export function LandingPage() {
               Start whiteboarding <ArrowRight className="ml-1 size-4" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link to="/dashboard">View a sample workflow</Link>
+          <Button size="lg" variant="outline" onClick={() => setTutorialOpen(true)}>
+            See how it works
           </Button>
         </div>
       </section>
+
+      <TutorialModal open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
       <section className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {steps.map((step, i) => (

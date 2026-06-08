@@ -390,6 +390,21 @@
 .wb-theme .md-pre .h { color: var(--accent-ink); font-weight: 600; }
 .wb-theme .md-pre .c { color: var(--ink-faint); }
 
+/* ---------------- tutorial modal ---------------- */
+.wb-theme .tut-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+.wb-theme .tut-copy { margin: 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.wb-theme .tut-canvas {
+  position: relative; height: 360px; flex: none; display: flex; pointer-events: none;
+  border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden;
+}
+.wb-theme .tut-canvas .palette,
+.wb-theme .tut-canvas .controls,
+.wb-theme .tut-canvas .hint-pill { display: none; }
+.wb-theme .tut-md { height: 360px; flex: none; display: flex; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+.wb-theme .tut-dots { display: flex; align-items: center; gap: 6px; }
+.wb-theme .tut-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--ink-faint); transition: background .15s, width .15s; }
+.wb-theme .tut-dot.on { width: 18px; background: var(--accent); }
+
 .wb-theme .confirm-body { padding: 20px 22px; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
 
 /* toast */

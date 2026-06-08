@@ -8,7 +8,7 @@ import { Modal } from './Modal'
 const HEADING_RE = /^#{1,6}\s/
 const COMMENT_RE = /^(>|```|---)/
 
-function MdView({ md }: { md: string }) {
+export function MdView({ md }: { md: string }) {
   const lines = md.split('\n')
   return (
     <pre className="md-pre">
