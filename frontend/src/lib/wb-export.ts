@@ -120,7 +120,7 @@ export function buildMarkdown(project: Project): string {
   }
 
   // ---- suggested structure ----
-  const fw = allStack.find((s) => /sdk|langgraph|crewai|mastra|pydantic|llamaindex/i.test(s))
+  const fw = allStack.find((s) => /sdk|langgraph|crewai|mastra|pydantic|llamaindex|mcp/i.test(s))
   const py = allStack.some((s) => /python|pydantic/i.test(s))
   const ext = py ? 'py' : 'ts'
   L.push('## Suggested project structure')

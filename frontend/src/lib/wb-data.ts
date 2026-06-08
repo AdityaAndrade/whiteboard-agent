@@ -53,10 +53,13 @@ export const TYPE_ORDER: NodeType[] = [
 
 /* ---------- stack / integration catalog ---------- */
 export const CATALOG: Record<string, string[]> = {
-  Models: ['Claude Sonnet 4.5', 'Claude Opus 4', 'Claude Haiku 4', 'GPT-4o', 'o3', 'Gemini 2.5 Pro', 'Llama 3.3 70B', 'Local (Ollama)'],
-  Frameworks: ['Claude Agent SDK', 'LangGraph', 'CrewAI', 'OpenAI Agents SDK', 'Vercel AI SDK', 'LlamaIndex', 'Mastra', 'Pydantic AI'],
+  Models: ['Claude Sonnet 4.5', 'Claude Opus 4', 'Claude Haiku 4', 'GPT-4o', 'o3', 'Gemini 2.5 Pro', 'Llama 3.3 70B', 'Mistral Large', 'Hermes 3', 'Qwen 2.5', 'DeepSeek V3', 'Grok 3', 'Local (Ollama)'],
+  'Media generation': ['Midjourney', 'DALL-E 3', 'Stable Diffusion', 'Flux', 'Adobe Firefly', 'Runway', 'Sora', 'Pika', 'Luma Dream Machine', 'HeyGen', 'ElevenLabs', 'Suno'],
+  Frameworks: ['Claude Agent SDK', 'LangGraph', 'CrewAI', 'OpenAI Agents SDK', 'Vercel AI SDK', 'LlamaIndex', 'Mastra', 'Pydantic AI', 'Model Context Protocol (MCP)'],
   'Data & memory': ['Postgres', 'Pinecone', 'Weaviate', 'Chroma', 'Redis', 'Supabase', 'S3', 'Neo4j'],
   Integrations: ['Slack', 'GitHub', 'Linear', 'Notion', 'Gmail', 'Stripe', 'Google Drive', 'Jira', 'Salesforce', 'Webhook'],
+  'Social platforms': ['X (Twitter)', 'Instagram', 'TikTok', 'LinkedIn', 'YouTube', 'Facebook', 'Pinterest', 'Threads', 'Buffer'],
+  'MCP servers': ['Filesystem MCP', 'GitHub MCP', 'Puppeteer MCP', 'Brave Search MCP', 'Postgres MCP', 'Slack MCP', 'Memory MCP', 'Fetch MCP'],
   Runtime: ['Node / TypeScript', 'Python', 'Cloudflare Workers', 'AWS Lambda', 'Modal', 'Docker'],
 }
 export const CATALOG_GROUPS = Object.keys(CATALOG)
