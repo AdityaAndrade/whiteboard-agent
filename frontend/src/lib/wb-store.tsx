@@ -137,6 +137,7 @@ export function WbStoreProvider({ children }: { children: ReactNode }) {
       setError(error.message)
       return
     }
+    localStorage.removeItem(`bs_hist_${id}`)
     setState((s) => ({
       ...s,
       projects: s.projects.filter((p) => p.id !== id),

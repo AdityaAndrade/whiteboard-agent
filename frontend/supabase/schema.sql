@@ -26,7 +26,7 @@ begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql set search_path = public;
 
 create trigger whiteboards_set_updated_at
   before update on public.whiteboards
@@ -70,6 +70,8 @@ begin
 end;
 $$ language plpgsql security definer set search_path = public;
 
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
@@ -79,3 +81,103 @@ create trigger on_auth_user_created
 insert into public.profiles (user_id, plan)
 select id, 'free' from auth.users
 on conflict (user_id) do nothing;
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- Brainstorm long-term memory — kept in its own table rather than a column
+-- on profiles so we can give it select/insert/update policies without
+-- opening up profiles.plan to client writes (no column-level RLS in PG).
+-- Each row holds a JSONB array of short fact strings (capped at 20 by the
+-- app). Run this section once (safe to re-run).
+-- ─────────────────────────────────────────────────────────────────────────
+
+create table if not exists public.brainstorm_memories (
+  user_id   uuid primary key references auth.users(id) on delete cascade,
+  entries   jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.brainstorm_memories enable row level security;
+
+drop policy if exists "select own memory" on public.brainstorm_memories;
+drop policy if exists "insert own memory" on public.brainstorm_memories;
+drop policy if exists "update own memory" on public.brainstorm_memories;
+
+create policy "select own memory" on public.brainstorm_memories for select using (auth.uid() = user_id);
+create policy "insert own memory" on public.brainstorm_memories for insert with check (auth.uid() = user_id);
+create policy "update own memory" on public.brainstorm_memories for update using (auth.uid() = user_id);
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- Stripe billing columns — added to profiles so the webhook edge function
+-- can link a Stripe customer/subscription back to a Supabase user.
+-- Written to be safe to re-run (alter column if not exists pattern).
+-- ─────────────────────────────────────────────────────────────────────────
+
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'profiles' and column_name = 'stripe_customer_id'
+  ) then
+    alter table public.profiles add column stripe_customer_id text;
+  end if;
+
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'profiles' and column_name = 'stripe_subscription_id'
+  ) then
+    alter table public.profiles add column stripe_subscription_id text;
+  end if;
+end;
+$$;
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- Brainstorm monthly usage tracking — server-side cap enforcement.
+-- Each row tracks the current calendar-month message count for one Pro user.
+-- The count is incremented atomically via a security-definer RPC so the
+-- client can read its own count but can never write it directly.
+-- ─────────────────────────────────────────────────────────────────────────
+
+create table if not exists public.brainstorm_usage (
+  user_id      uuid primary key references auth.users(id) on delete cascade,
+  period_start date not null default (date_trunc('month', now())::date),
+  count        int  not null default 0
+);
+
+alter table public.brainstorm_usage enable row level security;
+
+drop policy if exists "select own usage" on public.brainstorm_usage;
+create policy "select own usage" on public.brainstorm_usage
+  for select using (auth.uid() = user_id);
+
+-- Atomically increments this month's count and returns the new value.
+-- Resets automatically when the calendar month rolls over.
+-- Uses security definer so the counter can never be manipulated from the client.
+-- anon cannot call this; authenticated users can (the function enforces auth.uid() internally).
+create or replace function public.increment_brainstorm_usage()
+returns int
+language plpgsql security definer
+set search_path = public
+as $$
+declare
+  uid         uuid := auth.uid();
+  this_period date := date_trunc('month', now())::date;
+  new_count   int;
+begin
+  if uid is null then raise exception 'Unauthorized'; end if;
+
+  insert into brainstorm_usage (user_id, period_start, count)
+    values (uid, this_period, 1)
+  on conflict (user_id) do update set
+    count        = case
+                     when brainstorm_usage.period_start < this_period then 1
+                     else brainstorm_usage.count + 1
+                   end,
+    period_start = this_period
+  returning count into new_count;
+
+  return new_count;
+end;
+$$;
+
+revoke execute on function public.increment_brainstorm_usage() from public, anon;
+grant execute on function public.increment_brainstorm_usage() to authenticated;

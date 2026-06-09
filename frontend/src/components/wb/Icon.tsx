@@ -44,6 +44,7 @@ const PATHS: Record<string, ReactElement> = {
   chevron: <path d="M6 4l4 4-4 4" />,
   book: <path d="M8 3.5C6.5 2.5 4 2.5 2.5 3v9C4 11.5 6.5 11.5 8 12.5M8 3.5C9.5 2.5 12 2.5 13.5 3v9C12 11.5 9.5 11.5 8 12.5M8 3.5v9" />,
   file: <path d="M4 1.5h5l3 3V14H4zM9 1.5V5h3" />,
+  refresh: <path d="M13.5 7.5A5.5 5.5 0 1 1 10.5 3M13.5 3v4h-4" />,
 }
 
 interface IconProps extends SVGProps<SVGSVGElement> {

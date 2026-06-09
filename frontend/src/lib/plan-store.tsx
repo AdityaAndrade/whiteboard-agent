@@ -7,6 +7,8 @@ interface PlanValue {
   /** Defaults to 'free' while loading or for signed-out visitors. */
   plan: Plan
   loading: boolean
+  /** Re-fetch the plan from the DB. Call after returning from Stripe checkout. */
+  refreshPlan: () => void
 }
 
 const PlanContext = createContext<PlanValue | null>(null)
@@ -21,6 +23,9 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth()
   const [plan, setPlan] = useState<Plan>('free')
   const [loading, setLoading] = useState(true)
+  const [tick, setTick] = useState(0)
+
+  const refreshPlan = () => setTick((t) => t + 1)
 
   useEffect(() => {
     if (authLoading) return
@@ -48,9 +53,11 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false
     }
-  }, [user, authLoading])
+  // tick is intentionally included so refreshPlan() re-runs this effect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading, tick])
 
-  return <PlanContext.Provider value={{ plan, loading }}>{children}</PlanContext.Provider>
+  return <PlanContext.Provider value={{ plan, loading, refreshPlan }}>{children}</PlanContext.Provider>
 }
 
 // usePlan is colocated with PlanProvider/PlanContext (the standard provider+hook

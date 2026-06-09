@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { BrainstormPanel } from '@/components/wb/BrainstormPanel'
 import { Btn } from '@/components/wb/Button'
 import { Canvas } from '@/components/wb/Canvas'
 import { ExportModal } from '@/components/wb/ExportModal'
@@ -38,6 +39,7 @@ export function WhiteboardEditorPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [exportOpen, setExportOpen] = useState(false)
+  const [brainstormOpen, setBrainstormOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -122,11 +124,24 @@ export function WhiteboardEditorPage() {
         <Btn kind="ghost" icon="undo" disabled={!canUndo} onClick={undo} title="Undo (⌘Z)" />
         <Btn kind="ghost" icon="redo" disabled={!canRedo} onClick={redo} title="Redo (⌘⇧Z)" />
         <span className="sep" />
+        <Btn
+          kind={brainstormOpen ? 'soft' : 'ghost'}
+          onClick={() => setBrainstormOpen((o) => !o)}
+          title="Brainstorm — AI co-pilot (Pro)"
+          style={brainstormOpen ? { borderColor: 'var(--accent-line)', color: 'var(--accent)' } : undefined}
+        >
+          <Icon name="spark" size={15} />
+          <span>Brainstorm</span>
+        </Btn>
+        <span className="sep" />
         <Btn kind="primary" icon="download" onClick={() => setExportOpen(true)}>Export whiteboard.md</Btn>
       </div>
       <div className="editor">
         <Canvas project={project} selection={selection} setSelection={setSelection} actions={actions} />
-        <Inspector project={project} selection={selection} actions={actions} />
+        {brainstormOpen
+          ? <BrainstormPanel project={project} actions={actions} onClose={() => setBrainstormOpen(false)} />
+          : <Inspector project={project} selection={selection} actions={actions} />
+        }
       </div>
 
       <ExportModal open={exportOpen} project={project} onClose={() => setExportOpen(false)} toast={toast} />

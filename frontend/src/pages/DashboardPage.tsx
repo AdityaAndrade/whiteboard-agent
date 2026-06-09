@@ -125,7 +125,7 @@ export function DashboardPage() {
             <span style={{ flex: 1 }}>
               You&rsquo;ve reached your {plan === 'free' ? 'Free' : 'Pro'} plan&rsquo;s limit of {limit} saved
               workflow{limit === 1 ? '' : 's'}.
-              {plan === 'free' && ' Upgrade to Pro for up to 12.'}
+              {plan === 'free' && ` Upgrade to Pro for up to ${PLAN_LIMITS.pro}.`}
             </span>
             {plan === 'free' && (
               <Btn kind="soft" size="s" onClick={() => navigate('/pricing')}>See plans</Btn>

@@ -376,7 +376,7 @@
 .wb-theme .modal-head { padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
 .wb-theme .modal-head .mh-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
 .wb-theme .modal-head h2 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
-.wb-theme .modal-head p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-faint); }
+.wb-theme .modal-head p { margin: 2px 0 0; font-size: 11px; color: var(--ink-faint); }
 .wb-theme .modal-head .spacer { flex: 1; }
 .wb-theme .modal-foot { padding: 14px 22px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
 .wb-theme .modal-foot .spacer { flex: 1; }
